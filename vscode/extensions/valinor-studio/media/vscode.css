@@ -1,0 +1,162 @@
+/* VSCode-specific styles for Valinor Studio Extension */
+
+/* Use VSCode theme variables */
+:root {
+  --vscode-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --vscode-font-size: 14px;
+  --vscode-line-height: 1.4;
+}
+
+/* Container styles */
+.vscode-container {
+  padding: 16px;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  line-height: var(--vscode-line-height);
+}
+
+/* Button styles */
+.vscode-button {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: 1px solid var(--vscode-button-border);
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: var(--vscode-font-size);
+  transition: background-color 0.2s ease;
+}
+
+.vscode-button:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.vscode-button:disabled {
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  cursor: not-allowed;
+}
+
+/* Input styles */
+.vscode-input {
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: var(--vscode-font-size);
+}
+
+.vscode-input:focus {
+  border-color: var(--vscode-focusBorder);
+  outline: none;
+}
+
+/* Text area styles */
+.vscode-textarea {
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: var(--vscode-font-size);
+  resize: vertical;
+  min-height: 80px;
+}
+
+.vscode-textarea:focus {
+  border-color: var(--vscode-focusBorder);
+  outline: none;
+}
+
+/* Link styles */
+.vscode-link {
+  color: var(--vscode-textLink-foreground);
+  text-decoration: none;
+}
+
+.vscode-link:hover {
+  text-decoration: underline;
+}
+
+/* Status styles */
+.vscode-success {
+  color: var(--vscode-notificationsInfoIcon-foreground);
+}
+
+.vscode-error {
+  color: var(--vscode-notificationsErrorIcon-foreground);
+}
+
+.vscode-warning {
+  color: var(--vscode-notificationsWarningIcon-foreground);
+}
+
+/* Card styles */
+.vscode-card {
+  background-color: var(--vscode-editor-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+/* Header styles */
+.vscode-header {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--vscode-foreground);
+}
+
+.vscode-subheader {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--vscode-foreground);
+}
+
+/* List styles */
+.vscode-list {
+  list-style: none;
+  padding: 0;
+}
+
+.vscode-list-item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.vscode-list-item:last-child {
+  border-bottom: none;
+}
+
+/* Code block styles */
+.vscode-code {
+  background-color: var(--vscode-textCodeBlock-background);
+  color: var(--vscode-textCodeBlock-foreground);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: var(--vscode-editor-font-family);
+  font-size: 13px;
+  overflow-x: auto;
+}
+
+/* Divider styles */
+.vscode-divider {
+  height: 1px;
+  background-color: var(--vscode-panel-border);
+  margin: 16px 0;
+}
+
+/* Spacing utilities */
+.vscode-mt-8 { margin-top: 8px; }
+.vscode-mt-16 { margin-top: 16px; }
+.vscode-mb-8 { margin-bottom: 8px; }
+.vscode-mb-16 { margin-bottom: 16px; }
+.vscode-ml-8 { margin-left: 8px; }
+.vscode-mr-8 { margin-right: 8px; }
+.vscode-p-8 { padding: 8px; }
+.vscode-p-16 { padding: 16px; }

@@ -1,0 +1,606 @@
+{
+  "name": "valinor-studio",
+  "displayName": "Valinor Studio",
+  "description": "Proposal management and AI features for government proposals.",
+  "version": "0.0.1",
+  "publisher": "valinor-studio",
+  "engines": {
+    "vscode": ">=1.70.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "valinorStudio.openChat",
+        "title": "Open Valinor Studio Chat",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.importRFP",
+        "title": "Import RFP",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.selectModel",
+        "title": "Select AI Model",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.newProposal",
+        "title": "New Proposal",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.quickPick",
+        "title": "Quick Pick Palette",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.validatePricingTask",
+        "title": "Validate Pricing Task",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.askAIAboutSection",
+        "title": "Ask AI About Section",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.validateSection",
+        "title": "Validate Section",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.analyzePricing",
+        "title": "Analyze Pricing",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.checkCompliance",
+        "title": "Check Compliance",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.extractRFPFromPDF",
+        "title": "Extract RFP from PDF",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.convertWordToMarkdown",
+        "title": "Convert Word to Markdown",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.analyzeRFPText",
+        "title": "Analyze RFP Text",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.askAIAboutSelection",
+        "title": "Ask AI About Selection",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.suggestImprovements",
+        "title": "Suggest Improvements",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.checkComplianceTask",
+        "title": "Check Compliance Task",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.generateProposalTask",
+        "title": "Generate Proposal Task",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.exportProposalTask",
+        "title": "Export Proposal Task",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.generateSection",
+        "title": "Generate Section Content",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.viewSectionDiff",
+        "title": "View Section Diff",
+        "category": "Valinor Studio"
+      },
+      {
+        "command": "valinorStudio.insertCompanyProfile",
+        "title": "Insert Company Profile",
+        "category": "Proposal"
+      },
+      {
+        "command": "valinorStudio.generateProposalSection",
+        "title": "Generate Proposal Section via Chat",
+        "category": "Proposal"
+      },
+      {
+        "command": "valinorStudio.approveSection",
+        "title": "Approve Generated Section",
+        "category": "Proposal"
+      },
+      {
+        "command": "valinorStudio.rejectSection",
+        "title": "Reject Generated Section",
+        "category": "Proposal"
+      },
+      {
+        "command": "valinorStudio.copySection",
+        "title": "Copy Section to Clipboard",
+        "category": "Proposal"
+      },
+      {
+        "command": "valinorStudio.regenerateSection",
+        "title": "Regenerate Section",
+        "category": "Proposal"
+      },
+      {
+        "command": "valinorStudio.showSuggestionHistory",
+        "title": "Suggestion History",
+        "category": "Proposal"
+      },
+      {
+        "command": "valinorStudio.openSuggestionHistory",
+        "title": "Open Suggestion History",
+        "category": "Proposal"
+      },
+      {
+        "command": "valinorStudio.acceptSectionChanges",
+        "title": "Accept Section Changes",
+        "category": "Proposal"
+      },
+      {
+        "command": "valinorStudio.rejectSectionChanges",
+        "title": "Reject Section Changes",
+        "category": "Proposal"
+      },
+      {
+        "command": "valinorStudio.validatePricing",
+        "title": "Validate Pricing at Cursor",
+        "category": "Pricing"
+      },
+      {
+        "command": "valinorStudio.validateAllPricing",
+        "title": "Validate All Pricing in Document",
+        "category": "Pricing"
+      },
+      {
+        "command": "valinorStudio.validatePricingAtPosition",
+        "title": "Validate Pricing at Position",
+        "category": "Pricing"
+      },
+      {
+        "command": "valinorStudio.insertChatResponse",
+        "title": "Insert Chat Response into Document",
+        "category": "Chat"
+      },
+      {
+        "command": "valinorStudio.copyToClipboard",
+        "title": "Copy to Clipboard",
+        "category": "Chat"
+      },
+      {
+        "command": "valinorStudio.addComment",
+        "title": "Add Comment",
+        "category": "Collaboration"
+      },
+      {
+        "command": "valinorStudio.showVersionHistory",
+        "title": "Show Version History",
+        "category": "Version Control"
+      },
+      {
+        "command": "valinorStudio.initializeGit",
+        "title": "Initialize Git Repository",
+        "category": "Version Control"
+      },
+      {
+        "command": "valinorStudio.openConfiguration",
+        "title": "Open Configuration",
+        "category": "Valinor Studio"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "valinorStudio.openChat",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.importRFP",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.selectModel",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.newProposal",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.quickPick",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.validatePricingTask",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.checkCompliance",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.checkComplianceTask",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.generateProposalTask",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.exportProposalTask",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.askAIAboutSelection",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.suggestImprovements",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.generateSection",
+          "when": "resourceExtname == .md && resourceFilename == proposal.md"
+        },
+        {
+          "command": "valinorStudio.viewSectionDiff",
+          "when": "resourceExtname == .md && resourceFilename == proposal.md"
+        },
+        {
+          "command": "valinorStudio.insertCompanyProfile",
+          "when": "resourceExtname == .md && resourceFilename == proposal.md"
+        },
+        {
+          "command": "valinorStudio.generateProposalSection",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.openSuggestionHistory",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.validatePricing",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.validateAllPricing",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.addComment",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.showVersionHistory",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.initializeGit",
+          "when": "true"
+        },
+        {
+          "command": "valinorStudio.openConfiguration",
+          "when": "true"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "valinorStudio.generateSection",
+          "when": "resourceExtname == .md && resourceFilename == proposal.md",
+          "group": "1_modification"
+        },
+        {
+          "command": "valinorStudio.addComment",
+          "when": "true",
+          "group": "1_modification"
+        },
+        {
+          "command": "valinorStudio.askAIAboutSection",
+          "when": "resourceExtname == .md",
+          "group": "1_modification"
+        },
+        {
+          "command": "valinorStudio.validateSection",
+          "when": "resourceExtname == .md",
+          "group": "1_modification"
+        },
+        {
+          "command": "valinorStudio.askAIAboutSelection",
+          "when": "resourceExtname == .md",
+          "group": "1_modification"
+        },
+        {
+          "command": "valinorStudio.suggestImprovements",
+          "when": "resourceExtname == .md",
+          "group": "1_modification"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "valinorStudio.insertCompanyProfile",
+          "when": "resourceExtname == .md && resourceFilename == proposal.md",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "valinorStudio.importRFP",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "valinorStudio.newProposal",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "valinorStudio.generateSection",
+          "when": "resourceExtname == .md"
+        },
+        {
+          "command": "valinorStudio.extractRFPFromPDF",
+          "when": "resourceExtname == .pdf"
+        },
+        {
+          "command": "valinorStudio.convertWordToMarkdown",
+          "when": "resourceExtname == .doc || resourceExtname == .docx"
+        },
+        {
+          "command": "valinorStudio.analyzeRFPText",
+          "when": "resourceExtname == .txt"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "valinorStudio.openChat",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v"
+      },
+      {
+        "command": "valinorStudio.importRFP",
+        "key": "alt+cmd+i",
+        "mac": "alt+cmd+i"
+      },
+      {
+        "command": "valinorStudio.generateSection",
+        "key": "alt+cmd+g",
+        "mac": "alt+cmd+g"
+      },
+      {
+        "command": "valinorStudio.quickPick",
+        "key": "ctrl+shift+p",
+        "mac": "cmd+shift+p"
+      },
+      {
+        "command": "valinorStudio.validatePricingTask",
+        "key": "alt+cmd+v",
+        "mac": "alt+cmd+v"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "valinor-studio",
+          "title": "Valinor Studio",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "valinor-studio": [
+        {
+          "id": "valinorStudio.welcome",
+          "name": "Welcome",
+          "type": "webview"
+        },
+        {
+          "id": "valinorStudio.chat",
+          "name": "Chat",
+          "type": "webview"
+        },
+        {
+          "id": "valinorStudio.suggestionHistory",
+          "name": "Suggestion History",
+          "type": "webview"
+        },
+        {
+          "id": "valinorStudio.commentPanel",
+          "name": "Comments",
+          "type": "webview"
+        },
+        {
+          "id": "valinorStudio.versionPanel",
+          "name": "Version History",
+          "type": "webview"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "valinor-studio",
+        "contents": [
+          {
+            "viewItem": "Import RFP",
+            "command": "valinorStudio.importRFP"
+          },
+          {
+            "viewItem": "New Proposal",
+            "command": "valinorStudio.newProposal"
+          }
+        ]
+      }
+    ],
+    "tasks": {
+      "version": "2.0.0",
+      "tasks": [
+        {
+          "label": "Validate Pricing",
+          "type": "shell",
+          "command": "echo",
+          "args": ["Running pricing validation..."],
+          "group": {
+            "kind": "build",
+            "isDefault": true
+          },
+          "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared"
+          },
+          "problemMatcher": []
+        }
+      ]
+    },
+    "walkthroughs": [
+      {
+        "id": "valinorStudio.walkthrough",
+        "title": "Welcome to Valinor Studio",
+        "description": "Learn how to use Valinor Studio for government proposal management",
+        "primary": true,
+        "when": "!valinorStudio.walkthrough.completed",
+        "steps": [
+          {
+            "id": "valinorStudio.welcome",
+            "title": "Welcome to Valinor Studio",
+            "description": "Valinor Studio is your AI-powered assistant for government proposal management. Let's get you started!",
+            "media": {
+              "image": "media/welcome.png",
+              "altText": "Welcome to Valinor Studio"
+            }
+          },
+          {
+            "id": "valinorStudio.importRFP",
+            "title": "Import Your First RFP",
+            "description": "Start by importing an RFP from SAM.gov. You can use the Import RFP button or command palette.",
+            "command": "valinorStudio.importRFP"
+          },
+          {
+            "id": "valinorStudio.generateSection",
+            "title": "Generate Section Content",
+            "description": "Right-click on any section heading in your proposal to generate AI-powered content.",
+            "command": "valinorStudio.generateSection"
+          },
+          {
+            "id": "valinorStudio.chat",
+            "title": "Use the AI Chat",
+            "description": "Open the chat panel to ask questions about your proposal and get AI assistance.",
+            "command": "valinorStudio.openChat"
+          },
+          {
+            "id": "valinorStudio.validatePricing",
+            "title": "Validate Pricing",
+            "description": "Use the pricing validation features to ensure your pricing is competitive and compliant.",
+            "command": "valinorStudio.validateAllPricing"
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.70.0",
+    "typescript": "^4.8.0",
+    "vsce": "^2.10.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.848.0",
+    "dotenv": "^16.3.1"
+  },
+  "configuration": {
+    "title": "Valinor Studio",
+    "properties": {
+      "valinorStudio.samApiKey": {
+        "type": "string",
+        "default": "",
+        "description": "SAM.gov API key for accessing government contract data. Get your key from https://sam.gov/api/",
+        "scope": "application"
+      },
+      "valinorStudio.opensearchEndpoint": {
+        "type": "string",
+        "default": "",
+        "description": "OpenSearch endpoint URL for efficient contract searching",
+        "scope": "application"
+      },
+      "valinorStudio.opensearchUsername": {
+        "type": "string",
+        "default": "",
+        "description": "Username for OpenSearch authentication",
+        "scope": "application"
+      },
+      "valinorStudio.opensearchPassword": {
+        "type": "string",
+        "default": "",
+        "description": "Password for OpenSearch authentication",
+        "scope": "application"
+      },
+      "valinorStudio.openaiApiKey": {
+        "type": "string",
+        "default": "",
+        "description": "OpenAI API key for AI chat and content generation features",
+        "scope": "application"
+      },
+      "valinorStudio.awsAccessKeyId": {
+        "type": "string",
+        "default": "",
+        "description": "AWS Access Key ID for Bedrock/Claude models",
+        "scope": "application"
+      },
+      "valinorStudio.awsSecretAccessKey": {
+        "type": "string",
+        "default": "",
+        "description": "AWS Secret Access Key for Bedrock/Claude models",
+        "scope": "application"
+      },
+      "valinorStudio.awsRegion": {
+        "type": "string",
+        "default": "us-east-1",
+        "description": "AWS region for Bedrock services",
+        "scope": "application"
+      },
+      "valinorStudio.googleAiApiKey": {
+        "type": "string",
+        "default": "",
+        "description": "Google AI API key for Gemini models",
+        "scope": "application"
+      },
+      "valinorStudio.nodeEnv": {
+        "type": "string",
+        "default": "development",
+        "enum": ["development", "production"],
+        "description": "Node environment setting",
+        "scope": "application"
+      }
+    }
+  }
+}

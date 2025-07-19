@@ -1,0 +1,67 @@
+{
+  "userId": "user123",
+  "companyName": "Valinor Solutions Inc.",
+  "coreCompetencies": [
+    "Government Contract Management",
+    "Technical Consulting Services",
+    "Project Management & Implementation",
+    "Cybersecurity Solutions",
+    "Cloud Infrastructure Development",
+    "Data Analytics & Business Intelligence",
+    "Enterprise Software Development",
+    "IT Infrastructure Modernization"
+  ],
+  "pastPerformance": [
+    "Successfully delivered 15+ government contracts worth $50M+",
+    "Maintained 98% client satisfaction rating across all projects",
+    "Completed Department of Defense cybersecurity assessment",
+    "Implemented enterprise-wide cloud migration for federal agency",
+    "Led cross-functional teams of 50+ professionals",
+    "Reduced system downtime by 99.9% for critical government systems",
+    "Achieved 100% on-time delivery for all contract milestones",
+    "Implemented cost savings of $2M+ through process optimization"
+  ],
+  "differentiators": [
+    "ISO 27001 certified cybersecurity practices",
+    "Proprietary project management methodology",
+    "24/7 dedicated support team",
+    "Advanced analytics and reporting capabilities",
+    "Proven track record of on-time, under-budget delivery",
+    "Deep expertise in federal compliance requirements",
+    "Agile development methodology with government adaptations",
+    "Comprehensive risk management framework"
+  ],
+  "naicsCodes": [
+    "541511 - Custom Computer Programming Services",
+    "541512 - Computer Systems Design Services",
+    "541519 - Other Computer Related Services",
+    "541611 - Administrative Management and General Management Consulting Services",
+    "541690 - Other Scientific and Technical Consulting Services",
+    "541715 - Research and Development in the Physical, Engineering, and Life Sciences",
+    "541720 - Research and Development in the Social Sciences and Humanities",
+    "561210 - Facilities Support Services"
+  ],
+  "cageCode": "7A8B9",
+  "complianceStandards": [
+    "ISO 27001:2013 Information Security Management",
+    "ISO 9001:2015 Quality Management System",
+    "FedRAMP Moderate Authorization",
+    "DoD Cybersecurity Maturity Model Certification (CMMC) Level 3",
+    "SOC 2 Type II Compliance",
+    "NIST Cybersecurity Framework Implementation",
+    "HIPAA Compliance for Healthcare Systems",
+    "FISMA Moderate Authorization"
+  ],
+  "contractorHistory": [
+    "GSA Schedule 70 - Information Technology",
+    "GSA Schedule 874 - Mission Oriented Business Integrated Services (MOBIS)",
+    "8(a) Business Development Program",
+    "Small Business Administration (SBA) Certified",
+    "Veteran-Owned Small Business (VOSB)",
+    "HUBZone Certified Business",
+    "Woman-Owned Small Business (WOSB)",
+    "Service-Disabled Veteran-Owned Small Business (SDVOSB)"
+  ],
+  "createdAt": "2024-01-15T10:30:00Z",
+  "updatedAt": "2024-01-20T14:45:00Z"
+}
