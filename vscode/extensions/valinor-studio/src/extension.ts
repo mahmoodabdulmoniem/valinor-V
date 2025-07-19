@@ -1,6 +1,30 @@
 import * as vscode from 'vscode';
 import { ValinorChatViewProvider } from './modules/chat-ui';
 import { searchSAMGovAPI } from './modules/sam-api';
+
+// Terminal output with V-pattern banner
+function logToTerminal(message: string, type: 'info' | 'debug' | 'warning' | 'error' | 'success' = 'info') {
+  const banner = `
+╔══════════════════════════════════════════════════════════════╗
+║                    VALINOR STUDIO                            ║
+║              Government Contract Analysis                    ║
+╚══════════════════════════════════════════════════════════════╝
+`;
+
+  const timestamp = new Date().toLocaleTimeString();
+  const prefix = `[${timestamp}] [VALINOR ${type.toUpperCase()}]`;
+
+  // Show banner only for first message
+  if (!logToTerminal.hasShownBanner) {
+    console.log(banner);
+    logToTerminal.hasShownBanner = true;
+  }
+
+  console.log(`${prefix} ${message}`);
+}
+
+// Add property to track banner display
+logToTerminal.hasShownBanner = false;
 import { createContractFiles } from './modules/file-generator';
 import { analyzeContractWithAI } from './modules/ai-analyzer';
 import { SectionGenerator } from './modules/section-generator';
@@ -476,29 +500,48 @@ Would you like to:
           return;
         }
 
+        logToTerminal(`🔍 Searching for contract with Notice ID: ${noticeId}`, 'info');
+        logToTerminal(`Starting SAM.gov API search...`, 'debug');
         output.appendLine(`🔍 Searching for contract with Notice ID: ${noticeId}`);
         output.appendLine(`[VALINOR INFO] Starting SAM.gov API search...`);
         vscode.window.showInformationMessage(`🔍 Searching SAM.gov for contract: ${noticeId}...`);
 
         // Step 2: Fetch contract data from SAM.gov
+        logToTerminal(`Calling searchSAMGovAPI function...`, 'debug');
         output.appendLine(`[VALINOR DEBUG] Calling searchSAMGovAPI function...`);
         const contractData = await searchSAMGovAPI(noticeId, output);
+        logToTerminal(`searchSAMGovAPI returned: ${contractData ? 'SUCCESS' : 'NULL'}`, 'debug');
         output.appendLine(`[VALINOR DEBUG] searchSAMGovAPI returned: ${contractData ? 'SUCCESS' : 'NULL'}`);
 
         // Step 3: Check if contract was found
         if (!contractData) {
+          logToTerminal(`No contract found for Notice ID: ${noticeId}`, 'error');
+          logToTerminal(`This may be due to:`, 'warning');
+          logToTerminal(`  - Contract not being in the API yet`, 'warning');
+          logToTerminal(`  - Date range limitations`, 'warning');
+          logToTerminal(`  - API availability issues`, 'warning');
+          logToTerminal(`  - Search parameter issues`, 'warning');
+          logToTerminal(`Try searching with a different Notice ID or check the SAM.gov website`, 'info');
           output.appendLine(`❌ No contract found for Notice ID: ${noticeId}`);
           vscode.window.showErrorMessage(`❌ No contract found for Notice ID: ${noticeId}. Please check the ID and try again.`);
           return;
         }
 
         // Step 4: Create files in workspace
+        logToTerminal(`✅ Contract found successfully!`, 'success');
+        logToTerminal(`Title: ${contractData.title || 'N/A'}`, 'info');
+        logToTerminal(`Agency: ${contractData.fullParentPathName || 'N/A'}`, 'info');
+        logToTerminal(`Posted: ${contractData.postedDate || 'N/A'}`, 'info');
+        logToTerminal(`Deadline: ${contractData.responseDeadLine || 'N/A'}`, 'info');
+
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
         if (workspaceFolder) {
+          logToTerminal(`Creating contract files in workspace...`, 'info');
           await createContractFiles(contractData, workspaceFolder, output);
         }
 
         // Step 5: Send to AI for analysis
+        logToTerminal(`🤖 Sending contract data to AI for analysis...`, 'info');
         output.appendLine(`🤖 Sending contract data to AI for analysis...`);
         vscode.window.showInformationMessage(`✅ Contract found! Creating analysis files...`);
         await analyzeContractWithAI(contractData, output, chatProvider, chatProvider['_selectedModel']);
@@ -540,10 +583,12 @@ Would you like to:
         chatProvider.addMessage('ai', `🔍 I found a potential Notice ID: ${potentialNoticeId}. Let me search for this contract...`);
 
         try {
+          logToTerminal(`🔍 Chat detected Notice ID: ${potentialNoticeId}`, 'info');
           const contractData = await searchSAMGovAPI(potentialNoticeId, output);
 
           // Check if contract was found
           if (!contractData) {
+            logToTerminal(`No contract found for Notice ID: ${potentialNoticeId}`, 'error');
             chatProvider.addMessage('ai', `❌ Sorry, I couldn't find a contract with Notice ID: ${potentialNoticeId}. Please check the ID and try again.`);
             output.appendLine(`❌ No contract found for Notice ID: ${potentialNoticeId}`);
             return;

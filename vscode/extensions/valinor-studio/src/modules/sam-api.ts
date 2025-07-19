@@ -148,11 +148,23 @@ function formatDateForSAM(date: Date): string {
 	return `${month}/${day}/${year}`;
 }
 
+// Terminal output function for SAM API
+function logToTerminal(message: string, type: 'info' | 'debug' | 'warning' | 'error' | 'success' = 'info') {
+	const timestamp = new Date().toLocaleTimeString();
+	const prefix = `[${timestamp}] [VALINOR ${type.toUpperCase()}]`;
+	console.log(`${prefix} ${message}`);
+}
+
 // Enhanced SAM.gov API search with multiple strategies and validation
 export async function searchSAMGovAPI(noticeId: string, output: any): Promise<any> {
+	logToTerminal(`Searching SAM.gov API for Notice ID: ${noticeId}`, 'info');
 	output.appendLine(`[VALINOR INFO] Searching SAM.gov API for Notice ID: ${noticeId}`);
 
 	const analysis = analyzeNoticeId(noticeId);
+	logToTerminal(`Notice ID Analysis:`, 'debug');
+	logToTerminal(`  Type: ${analysis.type}`, 'debug');
+	logToTerminal(`  Normalized: ${analysis.normalized}`, 'debug');
+	logToTerminal(`  Patterns: ${analysis.patterns.join(', ')}`, 'debug');
 	output.appendLine(`[VALINOR DEBUG] Notice ID Analysis:`);
 	output.appendLine(`[VALINOR DEBUG]   Type: ${analysis.type}`);
 	output.appendLine(`[VALINOR DEBUG]   Normalized: ${analysis.normalized}`);
@@ -165,6 +177,7 @@ export async function searchSAMGovAPI(noticeId: string, output: any): Promise<an
 	const postedFrom = formatDateForSAM(startDate);
 	const postedTo = formatDateForSAM(endDate);
 
+	logToTerminal(`Using date range: ${postedFrom} to ${postedTo}`, 'debug');
 	output.appendLine(`[VALINOR DEBUG] Using date range: ${postedFrom} to ${postedTo}`);
 
 	// Strategy 1: Try API Notice ID search (MOST RELIABLE)
@@ -222,6 +235,7 @@ export async function searchSAMGovAPI(noticeId: string, output: any): Promise<an
 				const limit = 1000;
 				let hasMore = true;
 
+				logToTerminal(`Using pagination to get all contracts in date range...`, 'debug');
 				output.appendLine(`[VALINOR DEBUG] Using pagination to get all contracts in date range...`);
 
 				while (hasMore) {
@@ -240,6 +254,7 @@ export async function searchSAMGovAPI(noticeId: string, output: any): Promise<an
 						allContracts = allContracts.concat(data.opportunitiesData);
 						offset += limit;
 
+						logToTerminal(`Retrieved ${data.opportunitiesData.length} contracts (total: ${allContracts.length})`, 'debug');
 						output.appendLine(`[VALINOR DEBUG] Retrieved ${data.opportunitiesData.length} contracts (total: ${allContracts.length})`);
 
 						// Stop if we've got all contracts or if we've reached a reasonable limit
@@ -257,6 +272,13 @@ export async function searchSAMGovAPI(noticeId: string, output: any): Promise<an
 					// Search through all contracts for exact solicitation number match
 					for (const contract of allContracts) {
 						if (contract.solicitationNumber === pattern) {
+							logToTerminal(`Found EXACT match for solicitation number: ${pattern}`, 'success');
+							logToTerminal(`Title: ${contract.title || 'N/A'}`, 'info');
+							logToTerminal(`Agency: ${contract.fullParentPathName || 'N/A'}`, 'info');
+							logToTerminal(`Posted: ${contract.postedDate || 'N/A'}`, 'info');
+							logToTerminal(`Deadline: ${contract.responseDeadLine || 'N/A'}`, 'info');
+							logToTerminal(`API Notice ID: ${contract.noticeId || 'N/A'}`, 'info');
+							logToTerminal(`Solicitation Number: ${contract.solicitationNumber || 'N/A'}`, 'info');
 							output.appendLine(`[VALINOR SUCCESS] Found EXACT match for solicitation number: ${pattern}`);
 							output.appendLine(`[VALINOR INFO] Title: ${contract.title || 'N/A'}`);
 							output.appendLine(`[VALINOR INFO] Agency: ${contract.fullParentPathName || 'N/A'}`);
