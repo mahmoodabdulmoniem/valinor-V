@@ -63,6 +63,8 @@ function setEnvironmentFromConfig() {
     console.log('OpenSearch Endpoint:', config.opensearchEndpoint ? 'SET' : 'NOT SET');
     console.log('OpenSearch Username:', config.opensearchUsername ? 'SET' : 'NOT SET');
     console.log('OpenSearch Password:', config.opensearchPassword ? 'SET' : 'NOT SET');
+    console.log('AWS Access Key ID:', config.awsAccessKeyId ? 'SET' : 'NOT SET');
+    console.log('AWS Region:', config.awsRegion ? 'SET' : 'NOT SET');
     // Set environment variables from extension configuration (only if not already set from .env)
     if (config.samApiKey && !process.env.SAM_API_KEY)
         process.env.SAM_API_KEY = config.samApiKey;
@@ -84,11 +86,24 @@ function setEnvironmentFromConfig() {
         process.env.GOOGLE_AI_API_KEY = config.googleAiApiKey;
     if (config.nodeEnv && !process.env.NODE_ENV)
         process.env.NODE_ENV = config.nodeEnv;
+    // Set AWS credentials from environment variables if provided
+    if (!process.env.AWS_ACCESS_KEY_ID && process.env.AWS_ACCESS_KEY_ID) {
+        process.env.AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
+    }
+    if (!process.env.AWS_SECRET_ACCESS_KEY && process.env.AWS_SECRET_ACCESS_KEY) {
+        process.env.AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
+    }
+    if (!process.env.AWS_REGION && process.env.AWS_REGION) {
+        process.env.AWS_REGION = process.env.AWS_REGION;
+    }
     console.log('[Valinor Studio] Environment variables after config override:');
     console.log('SAM_API_KEY:', process.env.SAM_API_KEY ? 'SET' : 'NOT SET');
     console.log('OPENSEARCH_ENDPOINT:', process.env.OPENSEARCH_ENDPOINT ? 'SET' : 'NOT SET');
     console.log('OPENSEARCH_USERNAME:', process.env.OPENSEARCH_USERNAME ? 'SET' : 'NOT SET');
     console.log('OPENSEARCH_PASSWORD:', process.env.OPENSEARCH_PASSWORD ? 'SET' : 'NOT SET');
+    console.log('AWS_ACCESS_KEY_ID:', process.env.AWS_ACCESS_KEY_ID ? 'SET' : 'NOT SET');
+    console.log('AWS_SECRET_ACCESS_KEY:', process.env.AWS_SECRET_ACCESS_KEY ? 'SET' : 'NOT SET');
+    console.log('AWS_REGION:', process.env.AWS_REGION ? 'SET' : 'NOT SET');
 }
 exports.setEnvironmentFromConfig = setEnvironmentFromConfig;
 // Function to validate configuration

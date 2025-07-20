@@ -64,11 +64,15 @@ class DynamoDBService {
         });
     }
     getConfig() {
-        const config = vscode.workspace.getConfiguration('valinorStudio');
+        // Use environment variables first, then fall back to VS Code settings
+        const region = process.env.AWS_REGION || vscode.workspace.getConfiguration('valinorStudio').get('awsRegion') || 'us-east-1';
+        const accessKeyId = process.env.AWS_ACCESS_KEY_ID || vscode.workspace.getConfiguration('valinorStudio').get('awsAccessKeyId') || '';
+        const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY || vscode.workspace.getConfiguration('valinorStudio').get('awsSecretAccessKey') || '';
+        this.logToTerminal(`🔧 DynamoDB Config - Region: ${region}, Access Key: ${accessKeyId ? 'SET' : 'NOT SET'}`, 'info');
         return {
-            region: config.get('awsRegion') || 'us-east-1',
-            accessKeyId: config.get('awsAccessKeyId') || '',
-            secretAccessKey: config.get('awsSecretAccessKey') || '',
+            region: region,
+            accessKeyId: accessKeyId,
+            secretAccessKey: secretAccessKey,
             tableName: 'GovContracts' // Use the table with 52,232 contracts
         };
     }
