@@ -1,0 +1,67 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+import assert from 'assert';
+import { Range } from '../../../../../../../../../editor/common/core/range.js';
+import { FrontMatterValueToken } from '../../../../../../common/promptSyntax/codecs/base/frontMatterCodec/tokens/index.js';
+import { ensureNoDisposablesAreLeakedInTestSuite } from '../../../../../../../../../base/test/common/utils.js';
+import { Space, Tab, VerticalTab, Word } from '../../../../../../common/promptSyntax/codecs/base/simpleCodec/tokens/tokens.js';
+import { FrontMatterSequence } from '../../../../../../common/promptSyntax/codecs/base/frontMatterCodec/tokens/frontMatterSequence.js';
+suite('FrontMatterSequence', () => {
+    ensureNoDisposablesAreLeakedInTestSuite();
+    test('extends \'FrontMatterValueToken\'', () => {
+        const sequence = new FrontMatterSequence([
+            new Word(new Range(1, 1, 1, 5), 'test'),
+        ]);
+        assert(sequence instanceof FrontMatterValueToken, 'Must extend FrontMatterValueToken class.');
+    });
+    suite('trimEnd()', () => {
+        test('trims space tokens at the end of the sequence', () => {
+            const sequence = new FrontMatterSequence([
+                new Word(new Range(4, 18, 4, 18 + 10), 'some-value'),
+                new Space(new Range(4, 28, 4, 29)),
+                new Space(new Range(4, 29, 4, 30)),
+                new VerticalTab(new Range(4, 30, 4, 31)),
+                new Tab(new Range(4, 31, 4, 32)),
+                new Space(new Range(4, 32, 4, 33)),
+            ]);
+            const trimmed = sequence.trimEnd();
+            assert.deepStrictEqual(trimmed, [
+                new Space(new Range(4, 28, 4, 29)),
+                new Space(new Range(4, 29, 4, 30)),
+                new VerticalTab(new Range(4, 30, 4, 31)),
+                new Tab(new Range(4, 31, 4, 32)),
+                new Space(new Range(4, 32, 4, 33)),
+            ], 'Must return correct trimmed list of spacing tokens.');
+            assert(sequence.range.equalsRange(new Range(4, 18, 4, 28)), 'Must correctly update token range.');
+        });
+        test('remains functional if only spacing tokens were present', () => {
+            const sequence = new FrontMatterSequence([
+                new Space(new Range(4, 28, 4, 29)),
+                new Space(new Range(4, 29, 4, 30)),
+                new VerticalTab(new Range(4, 30, 4, 31)),
+                new Tab(new Range(4, 31, 4, 32)),
+                new Space(new Range(4, 32, 4, 33)),
+            ]);
+            const trimmed = sequence.trimEnd();
+            assert.deepStrictEqual(trimmed, [
+                new Space(new Range(4, 28, 4, 29)),
+                new Space(new Range(4, 29, 4, 30)),
+                new VerticalTab(new Range(4, 30, 4, 31)),
+                new Tab(new Range(4, 31, 4, 32)),
+                new Space(new Range(4, 32, 4, 33)),
+            ], 'Must return correct trimmed list of spacing tokens.');
+            assert(sequence.range.equalsRange(new Range(4, 28, 4, 28)), 'Must correctly update token range.');
+            assert.deepStrictEqual(sequence.children, [
+                new Word(new Range(4, 28, 4, 28), ''),
+            ], 'Must contain a single empty token.');
+        });
+    });
+    test('throws if no tokens provided', () => {
+        assert.throws(() => {
+            new FrontMatterSequence([]);
+        });
+    });
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZnJvbnRNYXR0ZXJTZXF1ZW5jZS50ZXN0LmpzIiwic291cmNlUm9vdCI6ImZpbGU6Ly8vVXNlcnMvbWFobW9vZGFiZHVsbW9uaWVtL0Rlc2t0b3AvdmFsaW5vci1WL3ZzY29kZS9zcmMvIiwic291cmNlcyI6WyJ2cy93b3JrYmVuY2gvY29udHJpYi9jaGF0L3Rlc3QvY29tbW9uL3Byb21wdFN5bnRheC9jb2RlY3MvYmFzZS9mcm9udE1hdHRlckRlY29kZXIvZnJvbnRNYXR0ZXJTZXF1ZW5jZS50ZXN0LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7Z0dBR2dHO0FBRWhHLE9BQU8sTUFBTSxNQUFNLFFBQVEsQ0FBQztBQUM1QixPQUFPLEVBQUUsS0FBSyxFQUFFLE1BQU0sd0RBQXdELENBQUM7QUFDL0UsT0FBTyxFQUFFLHFCQUFxQixFQUFFLE1BQU0sb0ZBQW9GLENBQUM7QUFDM0gsT0FBTyxFQUFFLHVDQUF1QyxFQUFFLE1BQU0sc0RBQXNELENBQUM7QUFDL0csT0FBTyxFQUFFLEtBQUssRUFBRSxHQUFHLEVBQUUsV0FBVyxFQUFFLElBQUksRUFBRSxNQUFNLGdGQUFnRixDQUFDO0FBQy9ILE9BQU8sRUFBRSxtQkFBbUIsRUFBRSxNQUFNLGtHQUFrRyxDQUFDO0FBRXZJLEtBQUssQ0FBQyxxQkFBcUIsRUFBRSxHQUFHLEVBQUU7SUFDakMsdUNBQXVDLEVBQUUsQ0FBQztJQUUxQyxJQUFJLENBQUMsbUNBQW1DLEVBQUUsR0FBRyxFQUFFO1FBQzlDLE1BQU0sUUFBUSxHQUFHLElBQUksbUJBQW1CLENBQUM7WUFDeEMsSUFBSSxJQUFJLENBQ1AsSUFBSSxLQUFLLENBQUMsQ0FBQyxFQUFFLENBQUMsRUFBRSxDQUFDLEVBQUUsQ0FBQyxDQUFDLEVBQ3JCLE1BQU0sQ0FDTjtTQUNELENBQUMsQ0FBQztRQUVILE1BQU0sQ0FDTCxRQUFRLFlBQVkscUJBQXFCLEVBQ3pDLDBDQUEwQyxDQUMxQyxDQUFDO0lBQ0gsQ0FBQyxDQUFDLENBQUM7SUFFSCxLQUFL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

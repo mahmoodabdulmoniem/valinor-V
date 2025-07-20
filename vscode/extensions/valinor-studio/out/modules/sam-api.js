@@ -25,6 +25,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchSAMGovAPI = void 0;
 const https = __importStar(require("https"));
+const dynamodb_service_1 = require("./dynamodb-service");
 const SAM_KEY = process.env.SAM_API_KEY || 'PRgPCfuCFEeuxk489Gak3ZJEO9UILH0AQyrXGSWr';
 const API_BASE_URL = "https://api.sam.gov/opportunities/v2/search";
 // Helper function to safely serialize objects without circular references
@@ -158,10 +159,66 @@ function formatDateForSAM(date) {
     const year = date.getFullYear();
     return `${month}/${day}/${year}`;
 }
+// Terminal output function for SAM API
+function logToTerminal(message, type = 'info') {
+    const timestamp = new Date().toLocaleTimeString();
+    const prefix = `[${timestamp}] [VALINOR ${type.toUpperCase()}]`;
+    console.log(`${prefix} ${message}`);
+}
 // Enhanced SAM.gov API search with multiple strategies and validation
 async function searchSAMGovAPI(noticeId, output) {
-    output.appendLine(`[VALINOR INFO] Searching SAM.gov API for Notice ID: ${noticeId}`);
+    logToTerminal(`🔍 Starting search for Notice ID: ${noticeId}`, 'info');
+    output.appendLine(`[VALINOR INFO] Starting search for Notice ID: ${noticeId}`);
+    // First, try DynamoDB (our database) - MUCH FASTER AND MORE RELIABLE
+    try {
+        logToTerminal(`🔍 Step 1: Searching DynamoDB GovContracts table first...`, 'info');
+        output.appendLine(`[VALINOR INFO] Step 1: Searching DynamoDB GovContracts table first...`);
+        const dynamoDBService = new dynamodb_service_1.DynamoDBService(output);
+        // Test connection first
+        const isConnected = await dynamoDBService.testConnection();
+        if (!isConnected) {
+            logToTerminal(`⚠️ DynamoDB connection failed, falling back to SAM.gov API`, 'warning');
+            output.appendLine(`[VALINOR WARNING] DynamoDB connection failed, falling back to SAM.gov API`);
+        }
+        else {
+            // Search in DynamoDB
+            const dynamoDBResult = await dynamoDBService.searchContractByNoticeId(noticeId);
+            if (dynamoDBResult) {
+                logToTerminal(`✅ Found contract in DynamoDB database!`, 'success');
+                output.appendLine(`[VALINOR SUCCESS] Found contract in DynamoDB database!`);
+                // Convert DynamoDB result to SAM.gov format for compatibility
+                return {
+                    opportunitiesData: [{
+                            noticeId: dynamoDBResult.noticeId,
+                            title: dynamoDBResult.title,
+                            description: dynamoDBResult.description,
+                            postedDate: dynamoDBResult.postedDate,
+                            responseDate: dynamoDBResult.responseDate,
+                            agency: dynamoDBResult.agency,
+                            classificationCode: dynamoDBResult.classificationCode,
+                            setAside: dynamoDBResult.setAside,
+                            naicsCode: dynamoDBResult.naicsCode,
+                            pointOfContact: dynamoDBResult.pointOfContact,
+                            fullText: dynamoDBResult.fullText
+                        }],
+                    totalRecords: 1,
+                    source: 'dynamodb'
+                };
+            }
+        }
+    }
+    catch (error) {
+        logToTerminal(`⚠️ DynamoDB search failed: ${error}, falling back to SAM.gov API`, 'warning');
+        output.appendLine(`[VALINOR WARNING] DynamoDB search failed: ${error}, falling back to SAM.gov API`);
+    }
+    // Fallback to SAM.gov API if DynamoDB fails or doesn't find the contract
+    logToTerminal(`🔍 Step 2: Falling back to SAM.gov API search...`, 'info');
+    output.appendLine(`[VALINOR INFO] Step 2: Falling back to SAM.gov API search...`);
     const analysis = analyzeNoticeId(noticeId);
+    logToTerminal(`Notice ID Analysis:`, 'debug');
+    logToTerminal(`  Type: ${analysis.type}`, 'debug');
+    logToTerminal(`  Normalized: ${analysis.normalized}`, 'debug');
+    logToTerminal(`  Patterns: ${analysis.patterns.join(', ')}`, 'debug');
     output.appendLine(`[VALINOR DEBUG] Notice ID Analysis:`);
     output.appendLine(`[VALINOR DEBUG]   Type: ${analysis.type}`);
     output.appendLine(`[VALINOR DEBUG]   Normalized: ${analysis.normalized}`);
@@ -172,6 +229,7 @@ async function searchSAMGovAPI(noticeId, output) {
     const endDate = new Date(today.getTime() + 180 * 24 * 60 * 60 * 1000); // 180 days forward
     const postedFrom = formatDateForSAM(startDate);
     const postedTo = formatDateForSAM(endDate);
+    logToTerminal(`Using date range: ${postedFrom} to ${postedTo}`, 'debug');
     output.appendLine(`[VALINOR DEBUG] Using date range: ${postedFrom} to ${postedTo}`);
     // Strategy 1: Try API Notice ID search (MOST RELIABLE)
     if (analysis.type === 'api') {
@@ -223,6 +281,7 @@ async function searchSAMGovAPI(noticeId, output) {
                 let offset = 0;
                 const limit = 1000;
                 let hasMore = true;
+                logToTerminal(`Using pagination to get all contracts in date range...`, 'debug');
                 output.appendLine(`[VALINOR DEBUG] Using pagination to get all contracts in date range...`);
                 while (hasMore) {
                     const params = new URLSearchParams({
@@ -237,9 +296,10 @@ async function searchSAMGovAPI(noticeId, output) {
                     if (data.opportunitiesData && data.opportunitiesData.length > 0) {
                         allContracts = allContracts.concat(data.opportunitiesData);
                         offset += limit;
+                        logToTerminal(`Retrieved ${data.opportunitiesData.length} contracts (total: ${allContracts.length})`, 'debug');
                         output.appendLine(`[VALINOR DEBUG] Retrieved ${data.opportunitiesData.length} contracts (total: ${allContracts.length})`);
                         // Stop if we've got all contracts or if we've reached a reasonable limit
-                        if (data.opportunitiesData.length < limit || allContracts.length >= 5000) {
+                        if (data.opportunitiesData.length < limit || allContracts.length >= 20000) {
                             hasMore = false;
                         }
                     }
@@ -252,6 +312,13 @@ async function searchSAMGovAPI(noticeId, output) {
                     // Search through all contracts for exact solicitation number match
                     for (const contract of allContracts) {
                         if (contract.solicitationNumber === pattern) {
+                            logToTerminal(`Found EXACT match for solicitation number: ${pattern}`, 'success');
+                            logToTerminal(`Title: ${contract.title || 'N/A'}`, 'info');
+                            logToTerminal(`Agency: ${contract.fullParentPathName || 'N/A'}`, 'info');
+                            logToTerminal(`Posted: ${contract.postedDate || 'N/A'}`, 'info');
+                            logToTerminal(`Deadline: ${contract.responseDeadLine || 'N/A'}`, 'info');
+                            logToTerminal(`API Notice ID: ${contract.noticeId || 'N/A'}`, 'info');
+                            logToTerminal(`Solicitation Number: ${contract.solicitationNumber || 'N/A'}`, 'info');
                             output.appendLine(`[VALINOR SUCCESS] Found EXACT match for solicitation number: ${pattern}`);
                             output.appendLine(`[VALINOR INFO] Title: ${contract.title || 'N/A'}`);
                             output.appendLine(`[VALINOR INFO] Agency: ${contract.fullParentPathName || 'N/A'}`);
@@ -319,7 +386,7 @@ async function searchSAMGovAPI(noticeId, output) {
                     offset += limit;
                     output.appendLine(`[VALINOR DEBUG] Retrieved ${data.opportunitiesData.length} contracts in ${dateRange.label} (total: ${allContractsInRange.length})`);
                     // Stop if we've got all contracts or if we've reached a reasonable limit
-                    if (data.opportunitiesData.length < limit || allContractsInRange.length >= 3000) {
+                    if (data.opportunitiesData.length < limit || allContractsInRange.length >= 10000) {
                         hasMore = false;
                     }
                 }
@@ -363,7 +430,7 @@ async function searchSAMGovAPI(noticeId, output) {
         const broadPostedTo = formatDateForSAM(broadEndDate);
         output.appendLine(`[VALINOR DEBUG] Broad date range: ${broadPostedFrom} to ${broadPostedTo}`);
         const params = new URLSearchParams({
-            limit: '2000',
+            limit: '5000',
             postedFrom: broadPostedFrom,
             postedTo: broadPostedTo
         });

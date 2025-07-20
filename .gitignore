@@ -1,0 +1,47 @@
+.DS_Store
+.cache
+npm-debug.log
+Thumbs.db
+node_modules/
+.build/
+.vscode/extensions/**/out/
+extensions/**/dist/
+/out*/
+/extensions/**/out/
+build/node_modules
+coverage/
+test_data/
+test-results/
+test-results.xml
+vscode.lsif
+vscode.db
+/.profile-oss
+/cli/target
+/cli/openssl
+product.overrides.json
+*.snap.actual
+*.tsbuildinfo
+.vscode-test
+
+# Environment variables and sensitive data
+.env
+*.env
+.env.local
+.env.production
+.env.development
+
+# API keys and secrets
+**/secrets/
+**/config/secrets/
+
+# Valinor Studio specific sensitive files
+vscode/extensions/valinor-studio/src/config/api-config.ts
+**/api-config.ts
+**/api-keys.ts
+**/secrets.ts
+**/credentials.ts
+
+# Configuration files with sensitive data
+**/config/api-config.ts
+**/config/secrets.ts
+**/config/credentials.ts
