@@ -94,6 +94,18 @@ export class ValinorChatViewProvider implements vscode.WebviewViewProvider {
 					case 'executeAction':
 						this.handleExecuteAction(message.actionId);
 						break;
+					case 'acceptMessage':
+						this.handleAcceptMessage(message.messageId);
+						break;
+					case 'rejectMessage':
+						this.handleRejectMessage(message.messageId);
+						break;
+					case 'viewAllChats':
+						this.handleViewAllChats();
+						break;
+					case 'loadChat':
+						this.handleLoadChat(message.chatId);
+						break;
 					case 'showAutoFixes':
 						this.handleShowAutoFixes();
 						break;
@@ -585,6 +597,46 @@ I'm here to help you analyze government contracts and create compelling proposal
 		vscode.commands.executeCommand('setContext', 'valinorStudio.currentModel', this._selectedModel);
 	}
 
+	private async handleAcceptMessage(messageId: string) {
+		try {
+			this._output.appendLine(`✅ Message accepted: ${messageId}`);
+			// TODO: Implement message acceptance logic
+			// This could save the message as a template, mark it as useful, etc.
+		} catch (error) {
+			this._output.appendLine(`❌ Error accepting message: ${error}`);
+		}
+	}
+
+	private async handleRejectMessage(messageId: string) {
+		try {
+			this._output.appendLine(`❌ Message rejected: ${messageId}`);
+			// TODO: Implement message rejection logic
+			// This could provide feedback to improve future responses
+		} catch (error) {
+			this._output.appendLine(`❌ Error rejecting message: ${error}`);
+		}
+	}
+
+	private async handleViewAllChats() {
+		try {
+			this._output.appendLine(`📋 Opening chat history...`);
+			// TODO: Implement view all chats functionality
+			// This could open a new panel with all chat history
+		} catch (error) {
+			this._output.appendLine(`❌ Error viewing all chats: ${error}`);
+		}
+	}
+
+	private async handleLoadChat(chatId: string) {
+		try {
+			this._output.appendLine(`📂 Loading chat: ${chatId}`);
+			// TODO: Implement load chat functionality
+			// This could load a specific chat from history
+		} catch (error) {
+			this._output.appendLine(`❌ Error loading chat: ${error}`);
+		}
+	}
+
 	private _render() {
 		if (!this._view) return;
 
@@ -630,22 +682,23 @@ I'm here to help you analyze government contracts and create compelling proposal
 				</div>
 			` : '';
 
-			return `<div class="message ${isUser ? 'user-message' : 'ai-message'}" data-message-id="${messageId}">
-				<div class="message-avatar">
-					${isUser ? `
-						<div class="user-avatar">
-							<svg viewBox="0 0 24 24">
-								<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-							</svg>
-						</div>
-					` : `
-						<div class="ai-avatar">
-							<svg viewBox="0 0 24 24">
-								<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-							</svg>
-						</div>
-					`}
+			// Generate accept/reject buttons for AI messages
+			const acceptRejectHtml = !isUser ? `
+				<div class="message-feedback">
+					<button class="feedback-btn accept-btn" onclick="acceptMessage('${messageId}')" title="Accept response">
+						<svg viewBox="0 0 16 16">
+							<path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+						</svg>
+					</button>
+					<button class="feedback-btn reject-btn" onclick="rejectMessage('${messageId}')" title="Reject response">
+						<svg viewBox="0 0 16 16">
+							<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+						</svg>
+					</button>
 				</div>
+			` : '';
+
+			return `<div class="message ${isUser ? 'user-message' : 'ai-message'}" data-message-id="${messageId}">
 				<div class="message-content-wrapper">
 					<div class="message-content">
 						${text}
@@ -656,6 +709,7 @@ I'm here to help you analyze government contracts and create compelling proposal
 						<span class="message-time">${time}</span>
 						${!isUser ? `<span class="message-model">${msg.model || this._selectedModel}</span>` : ''}
 					</div>
+					${acceptRejectHtml}
 				</div>
 			</div>`;
 		}).join('');
@@ -674,10 +728,10 @@ I'm here to help you analyze government contracts and create compelling proposal
 
 					body {
 						font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-						background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
-						color: #e1e1e1;
-						font-size: 14px;
-						line-height: 1.6;
+						background: #0d1117;
+						color: #f0f6fc;
+						font-size: 13px;
+						line-height: 1.5;
 						height: 100vh;
 						overflow: hidden;
 						user-select: none;
@@ -690,14 +744,13 @@ I'm here to help you analyze government contracts and create compelling proposal
 						flex-direction: column;
 						height: 100vh;
 						max-height: 100vh;
-						background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+						background: #0d1117;
 					}
 
 					.header {
-						background: rgba(26, 26, 26, 0.95);
-						backdrop-filter: blur(20px);
-						border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-						padding: 16px 20px;
+						background: #161b22;
+						border-bottom: 1px solid #30363d;
+						padding: 12px 16px;
 						display: flex;
 						align-items: center;
 						justify-content: space-between;
@@ -712,7 +765,7 @@ I'm here to help you analyze government contracts and create compelling proposal
 						left: 0;
 						right: 0;
 						height: 1px;
-						background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+						background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
 					}
 
 					.header-left {
@@ -754,52 +807,51 @@ I'm here to help you analyze government contracts and create compelling proposal
 					}
 
 					.header-title {
-						font-weight: 600;
-						font-size: 16px;
-						color: #ffffff;
-						letter-spacing: -0.02em;
+						font-weight: 500;
+						font-size: 14px;
+						color: #f0f6fc;
+						letter-spacing: -0.01em;
 					}
 
 					.model-selector {
 						display: flex;
 						align-items: center;
-						gap: 8px;
-						background: rgba(255, 255, 255, 0.05);
-						border: 1px solid rgba(255, 255, 255, 0.1);
-						border-radius: 8px;
-						padding: 6px 12px;
-						backdrop-filter: blur(10px);
+						gap: 6px;
+						background: #21262d;
+						border: 1px solid #30363d;
+						border-radius: 6px;
+						padding: 4px 8px;
 					}
 
 					.model-label {
-						font-size: 12px;
-						color: rgba(255, 255, 255, 0.6);
-						font-weight: 500;
+						font-size: 11px;
+						color: #8b949e;
+						font-weight: 400;
 					}
 
 					.model-dropdown {
 						background: transparent;
 						border: none;
-						color: #ffffff;
-						font-size: 12px;
-						font-weight: 500;
+						color: #f0f6fc;
+						font-size: 11px;
+						font-weight: 400;
 						cursor: pointer;
 						transition: all 0.2s ease;
-						min-width: 80px;
+						min-width: 70px;
 						outline: none;
 					}
 
 					.model-dropdown:hover {
-						color: #667eea;
+						color: #58a6ff;
 					}
 
 					.messages-container {
 						flex: 1;
 						overflow-y: auto;
-						padding: 24px 20px;
+						padding: 16px;
 						display: flex;
 						flex-direction: column;
-						gap: 24px;
+						gap: 16px;
 						background: transparent;
 						scroll-behavior: smooth;
 					}
@@ -823,9 +875,9 @@ I'm here to help you analyze government contracts and create compelling proposal
 
 					.message {
 						display: flex;
-						gap: 12px;
 						max-width: 100%;
-						animation: messageSlideIn 0.4s ease-out;
+						animation: messageSlideIn 0.3s ease-out;
+						margin-bottom: 16px;
 					}
 
 					@keyframes messageSlideIn {
@@ -840,64 +892,78 @@ I'm here to help you analyze government contracts and create compelling proposal
 					}
 
 					.user-message {
-						flex-direction: row-reverse;
+						justify-content: flex-end;
 					}
 
-					.message-avatar {
-						flex-shrink: 0;
-						width: 36px;
-						height: 36px;
-						border-radius: 50%;
-						display: flex;
-						align-items: center;
-						justify-content: center;
-						position: relative;
-					}
-
-					.user-avatar {
-						background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-						box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-					}
-
-					.ai-avatar {
-						background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-						box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);
-					}
-
-					.message-avatar svg {
-						width: 20px;
-						height: 20px;
-						fill: white;
+					.ai-message {
+						justify-content: flex-start;
 					}
 
 					.message-content-wrapper {
-						flex: 1;
-						max-width: calc(100% - 48px);
+						max-width: 85%;
+						position: relative;
 					}
 
 					.message-content {
-						padding: 16px 20px;
-						border-radius: 18px;
+						padding: 12px 16px;
+						border-radius: 8px;
 						word-wrap: break-word;
 						line-height: 1.6;
-						font-size: 14px;
+						font-size: 13px;
 						position: relative;
-						backdrop-filter: blur(10px);
-						border: 1px solid rgba(255, 255, 255, 0.1);
-						box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+						border: 1px solid #30363d;
+						background: transparent;
 					}
 
 					.user-message .message-content {
-						background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-						color: #ffffff;
-						border-color: rgba(102, 126, 234, 0.3);
-						box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+						background: transparent;
+						color: #f0f6fc;
+						border-color: #58a6ff;
+						border-width: 1px;
 					}
 
 					.ai-message .message-content {
-						background: rgba(255, 255, 255, 0.05);
-						color: #e1e1e1;
-						border-color: rgba(255, 255, 255, 0.1);
+						background: transparent;
+						color: #f0f6fc;
+						border-color: #30363d;
+						border-width: 1px;
+					}
+
+					.message-feedback {
+						display: flex;
+						gap: 4px;
+						margin-top: 8px;
+						justify-content: flex-end;
+					}
+
+					.feedback-btn {
+						background: transparent;
+						border: 1px solid #30363d;
+						border-radius: 4px;
+						padding: 4px;
+						cursor: pointer;
+						transition: all 0.2s ease;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+					}
+
+					.feedback-btn svg {
+						width: 12px;
+						height: 12px;
+						fill: #8b949e;
+					}
+
+					.feedback-btn:hover {
+						border-color: #58a6ff;
+					}
+
+					.accept-btn:hover svg {
+						fill: #3fb950;
+					}
+
+					.reject-btn:hover svg {
+						fill: #f85149;
 					}
 
 					.message-sources {
@@ -1052,10 +1118,9 @@ I'm here to help you analyze government contracts and create compelling proposal
 					}
 
 					.input-section {
-						background: rgba(26, 26, 26, 0.95);
-						backdrop-filter: blur(20px);
-						border-top: 1px solid rgba(255, 255, 255, 0.1);
-						padding: 20px;
+						background: #161b22;
+						border-top: 1px solid #30363d;
+						padding: 16px;
 						flex-shrink: 0;
 						position: relative;
 					}
@@ -1067,27 +1132,25 @@ I'm here to help you analyze government contracts and create compelling proposal
 						left: 0;
 						right: 0;
 						height: 1px;
-						background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+						background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
 					}
 
 					.input-container {
 						position: relative;
-						background: rgba(255, 255, 255, 0.05);
-						border: 1px solid rgba(255, 255, 255, 0.1);
-						border-radius: 16px;
-						padding: 12px 16px;
+						background: #21262d;
+						border: 1px solid #30363d;
+						border-radius: 8px;
+						padding: 8px 12px;
 						display: flex;
 						align-items: flex-end;
-						gap: 12px;
-						min-height: 52px;
-						transition: all 0.3s ease;
-						backdrop-filter: blur(10px);
+						gap: 8px;
+						min-height: 40px;
+						transition: all 0.2s ease;
 					}
 
 					.input-container:focus-within {
-						border-color: rgba(102, 126, 234, 0.5);
-						box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
-						background: rgba(255, 255, 255, 0.08);
+						border-color: #58a6ff;
+						background: #21262d;
 					}
 
 					.input-left-controls {
@@ -1101,9 +1164,9 @@ I'm here to help you analyze government contracts and create compelling proposal
 					.control-button {
 						background: transparent;
 						border: none;
-						color: rgba(255, 255, 255, 0.6);
+						color: #8b949e;
 						padding: 8px;
-						border-radius: 8px;
+						border-radius: 6px;
 						cursor: pointer;
 						transition: all 0.2s ease;
 						font-size: 16px;
@@ -1113,8 +1176,8 @@ I'm here to help you analyze government contracts and create compelling proposal
 					}
 
 					.control-button:hover {
-						background: rgba(255, 255, 255, 0.1);
-						color: rgba(255, 255, 255, 0.9);
+						background: rgba(255, 255, 255, 0.05);
+						color: #f0f6fc;
 						transform: translateY(-1px);
 					}
 
@@ -1128,19 +1191,19 @@ I'm here to help you analyze government contracts and create compelling proposal
 						flex: 1;
 						background: transparent;
 						border: none;
-						color: #e1e1e1;
-						font-size: 14px;
-						line-height: 1.5;
+						color: #f0f6fc;
+						font-size: 13px;
+						line-height: 1.4;
 						resize: none;
 						outline: none;
 						font-family: inherit;
-						min-height: 24px;
-						max-height: 120px;
+						min-height: 20px;
+						max-height: 100px;
 						overflow-y: auto;
 					}
 
 					.input-field::placeholder {
-						color: rgba(255, 255, 255, 0.4);
+						color: #8b949e;
 					}
 
 					.input-field::-webkit-scrollbar {
@@ -1164,32 +1227,30 @@ I'm here to help you analyze government contracts and create compelling proposal
 					}
 
 					.send-button {
-						background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+						background: #58a6ff;
 						color: white;
 						border: none;
-						border-radius: 12px;
-						width: 40px;
-						height: 40px;
+						border-radius: 6px;
+						width: 32px;
+						height: 32px;
 						cursor: pointer;
 						transition: all 0.2s ease;
 						display: flex;
 						align-items: center;
 						justify-content: center;
-						box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 					}
 
 					.send-button:hover {
-						transform: translateY(-2px);
-						box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+						background: #1f6feb;
 					}
 
 					.send-button:active {
-						transform: translateY(0);
+						background: #1158c7;
 					}
 
 					.send-button svg {
-						width: 20px;
-						height: 20px;
+						width: 16px;
+						height: 16px;
 						fill: currentColor;
 					}
 
@@ -1230,8 +1291,81 @@ I'm here to help you analyze government contracts and create compelling proposal
 					}
 
 					.new-chat-text {
-						color: rgba(255, 255, 255, 0.4);
+						color: #8b949e;
 						font-size: 11px;
+					}
+
+					.past-chats {
+						background: #161b22;
+						border-top: 1px solid #30363d;
+						padding: 16px;
+						flex-shrink: 0;
+					}
+
+					.past-chats-header {
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+						margin-bottom: 12px;
+					}
+
+					.past-chats-title {
+						font-size: 12px;
+						font-weight: 500;
+						color: #f0f6fc;
+					}
+
+					.view-all-btn {
+						background: transparent;
+						border: none;
+						color: #58a6ff;
+						font-size: 11px;
+						cursor: pointer;
+						transition: all 0.2s ease;
+						padding: 4px 8px;
+						border-radius: 4px;
+					}
+
+					.view-all-btn:hover {
+						background: rgba(88, 166, 255, 0.1);
+					}
+
+					.past-chats-list {
+						display: flex;
+						flex-direction: column;
+						gap: 8px;
+					}
+
+					.past-chat-item {
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+						padding: 8px 12px;
+						background: #21262d;
+						border: 1px solid #30363d;
+						border-radius: 6px;
+						cursor: pointer;
+						transition: all 0.2s ease;
+					}
+
+					.past-chat-item:hover {
+						border-color: #58a6ff;
+						background: #21262d;
+					}
+
+					.chat-title {
+						font-size: 12px;
+						color: #f0f6fc;
+						flex: 1;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+					}
+
+					.chat-time {
+						font-size: 10px;
+						color: #8b949e;
+						margin-left: 8px;
 					}
 
 					/* Professional text formatting */
@@ -1338,6 +1472,80 @@ I'm here to help you analyze government contracts and create compelling proposal
 						font-weight: 500;
 					}
 
+					.past-chats {
+						position: absolute;
+						bottom: 80px;
+						left: 16px;
+						right: 16px;
+						background: #2d2d30;
+						border: 1px solid #3e3e42;
+						border-radius: 6px;
+						padding: 12px;
+						max-height: 200px;
+						overflow-y: auto;
+					}
+
+					.past-chats-header {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						margin-bottom: 8px;
+					}
+
+					.past-chats-title {
+						font-size: 12px;
+						font-weight: 500;
+						color: #cccccc;
+					}
+
+					.view-all-btn {
+						background: none;
+						border: none;
+						color: #007acc;
+						font-size: 11px;
+						cursor: pointer;
+						padding: 0;
+					}
+
+					.view-all-btn:hover {
+						text-decoration: underline;
+					}
+
+					.past-chats-list {
+						display: flex;
+						flex-direction: column;
+						gap: 6px;
+					}
+
+					.past-chat-item {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						padding: 6px 8px;
+						border-radius: 4px;
+						cursor: pointer;
+						transition: background-color 0.2s ease;
+					}
+
+					.past-chat-item:hover {
+						background: #3c3c3c;
+					}
+
+					.chat-title {
+						font-size: 11px;
+						color: #cccccc;
+						flex: 1;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+					}
+
+					.chat-time {
+						font-size: 10px;
+						color: #999999;
+						margin-left: 8px;
+					}
+
 					/* Responsive design */
 					@media (max-width: 768px) {
 						.header {
@@ -1364,13 +1572,12 @@ I'm here to help you analyze government contracts and create compelling proposal
 				<div class="chat-container">
 					<div class="header">
 						<div class="header-left">
-							<div class="header-icon">V</div>
-							<div class="header-title">Valinor Studio AI</div>
+							<div class="header-title">New Chat</div>
 						</div>
 						<div class="model-selector">
-							<span class="model-label">Model:</span>
+							<span class="model-label">∞ Agent x1</span>
 							<select class="model-dropdown" id="modelDropdown" onchange="changeModel()">
-								<option value="GPT-4" ${this._selectedModel === 'GPT-4' ? 'selected' : ''}>GPT-4</option>
+								<option value="GPT-4" ${this._selectedModel === 'GPT-4' ? 'selected' : ''}>Auto</option>
 								<option value="GPT-3.5" ${this._selectedModel === 'GPT-3.5' ? 'selected' : ''}>GPT-3.5</option>
 								<option value="Claude-3" ${this._selectedModel === 'Claude-3' ? 'selected' : ''}>Claude-3</option>
 								<option value="Claude-2" ${this._selectedModel === 'Claude-2' ? 'selected' : ''}>Claude-2</option>
@@ -1388,27 +1595,33 @@ I'm here to help you analyze government contracts and create compelling proposal
 						</div>
 					</div>
 
+					<div class="past-chats">
+						<div class="past-chats-header">
+							<span class="past-chats-title">Past Chats</span>
+							<button class="view-all-btn" onclick="viewAllChats()">View All</button>
+						</div>
+						<div class="past-chats-list">
+							<div class="past-chat-item" onclick="loadChat('chat1')">
+								<span class="chat-title">Request for quotation for Cisco hardware</span>
+								<span class="chat-time">4m ago</span>
+							</div>
+							<div class="past-chat-item" onclick="loadChat('chat2')">
+								<span class="chat-title">Protecting sensitive API key information</span>
+								<span class="chat-time">4h ago</span>
+							</div>
+							<div class="past-chat-item" onclick="loadChat('chat3')">
+								<span class="chat-title">Cannot edit in read-only editor</span>
+								<span class="chat-time">7h ago</span>
+							</div>
+						</div>
+					</div>
+
 					<div class="input-section">
 						<div class="input-container">
 							<div class="input-left-controls">
-								<button class="control-button" onclick="showAutoFixes()" title="Auto-fixes">
-									<svg viewBox="0 0 24 24">
-										<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-									</svg>
-								</button>
-								<button class="control-button" onclick="showInChatCreations()" title="In-chat creations">
-									<svg viewBox="0 0 24 24">
-										<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-									</svg>
-								</button>
 								<button class="control-button" onclick="addContext()" title="Add context">
 									<svg viewBox="0 0 24 24">
 										<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-									</svg>
-								</button>
-								<button class="control-button" onclick="addImage()" title="Add image">
-									<svg viewBox="0 0 24 24">
-										<path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
 									</svg>
 								</button>
 							</div>
@@ -1416,13 +1629,18 @@ I'm here to help you analyze government contracts and create compelling proposal
 							<textarea
 								class="input-field"
 								id="messageInput"
-								placeholder="Ask about evaluation criteria, summarize background, generate content..."
+								placeholder="Plan, search, build anything..."
 								rows="1"
 								onkeydown="handleKeyDown(event)"
 								oninput="autoResize()"
 							></textarea>
 
 							<div class="input-right-controls">
+								<button class="control-button" onclick="addImage()" title="Add image">
+									<svg viewBox="0 0 24 24">
+										<path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+									</svg>
+								</button>
 								<button class="send-button" onclick="sendMessage()" id="sendButton" title="Send message">
 									<svg viewBox="0 0 24 24">
 										<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
@@ -1528,6 +1746,33 @@ I'm here to help you analyze government contracts and create compelling proposal
 						vscode.postMessage({
 							command: command,
 							messageId: messageId
+						});
+					}
+
+					function acceptMessage(messageId) {
+						vscode.postMessage({
+							command: 'acceptMessage',
+							messageId: messageId
+						});
+					}
+
+					function rejectMessage(messageId) {
+						vscode.postMessage({
+							command: 'rejectMessage',
+							messageId: messageId
+						});
+					}
+
+					function viewAllChats() {
+						vscode.postMessage({
+							command: 'viewAllChats'
+						});
+					}
+
+					function loadChat(chatId) {
+						vscode.postMessage({
+							command: 'loadChat',
+							chatId: chatId
 						});
 					}
 

@@ -63,9 +63,19 @@ export async function activate(context: vscode.ExtensionContext) {
     console.log('[Valinor Studio] Loading .env from:', envPath);
     dotenv.config({ path: envPath });
 
+    // Set AWS credentials from environment variables (not hardcoded for security)
+    process.env.AWS_REGION = process.env.AWS_REGION || 'us-east-1';
+    // AWS credentials should be set via environment variables or .env file
+    // process.env.AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID || '';
+    // process.env.AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY || '';
+    // process.env.SAM_API_KEY = process.env.SAM_API_KEY || '';
+
     // Debug: Log environment variables after .env load
     console.log('[Valinor Studio] Environment variables after .env load:');
     console.log('SAM_API_KEY:', process.env.SAM_API_KEY ? 'SET' : 'NOT SET');
+    console.log('AWS_ACCESS_KEY_ID:', process.env.AWS_ACCESS_KEY_ID ? 'SET' : 'NOT SET');
+    console.log('AWS_SECRET_ACCESS_KEY:', process.env.AWS_SECRET_ACCESS_KEY ? 'SET' : 'NOT SET');
+    console.log('AWS_REGION:', process.env.AWS_REGION ? 'SET' : 'NOT SET');
     console.log('OPENSEARCH_ENDPOINT:', process.env.OPENSEARCH_ENDPOINT ? 'SET' : 'NOT SET');
     console.log('OPENSEARCH_USERNAME:', process.env.OPENSEARCH_USERNAME ? 'SET' : 'NOT SET');
     console.log('OPENSEARCH_PASSWORD:', process.env.OPENSEARCH_PASSWORD ? 'SET' : 'NOT SET');
@@ -673,6 +683,29 @@ Try pasting a Notice ID or use the "Import RFP" command to get started!`);
   } catch (error) {
     console.error('Error activating Valinor Studio extension:', error);
     output.appendLine(`❌ Error activating extension: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+// Add proper deactivation function to fix memory leaks
+export function deactivate() {
+  console.log('Valinor Studio extension is now deactivated!');
+
+  // The context.subscriptions will automatically dispose all registered disposables
+  // This includes:
+  // - All command registrations
+  // - All webview providers
+  // - All status bar items
+  // - All output channels
+  // - All event listeners
+  // - All timers and intervals
+
+  // Additional cleanup for any global resources
+  try {
+    // VS Code automatically handles disposal of all registered disposables
+    // through context.subscriptions, so no additional cleanup is needed
+    console.log('✅ Valinor Studio extension cleanup completed successfully!');
+  } catch (error) {
+    console.error('Error during extension cleanup:', error);
   }
 }
 

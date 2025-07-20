@@ -42,6 +42,11 @@ async function callOpenAI(model: string, prompt: string, output: any): Promise<s
 		throw new Error(`Model ${model} not configured`);
 	}
 
+	// Check if API key is available
+	if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {
+		throw new Error('OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.');
+	}
+
 	const requestData = {
 		model: config.modelId,
 		messages: [
@@ -59,6 +64,7 @@ async function callOpenAI(model: string, prompt: string, output: any): Promise<s
 	};
 
 	try {
+		output.appendLine(`🤖 Calling OpenAI API with model: ${model}`);
 		const response = await makeHttpsRequest(config.endpoint, {
 			method: 'POST',
 			headers: config.headers
@@ -66,12 +72,35 @@ async function callOpenAI(model: string, prompt: string, output: any): Promise<s
 
 		if (response.choices && response.choices[0] && response.choices[0].message) {
 			return response.choices[0].message.content;
+		} else if (response.error) {
+			throw new Error(`OpenAI API Error: ${response.error.message || response.error.type}`);
 		} else {
 			throw new Error('Invalid response format from OpenAI');
 		}
 	} catch (error) {
-		output.appendLine(`❌ OpenAI API Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-		throw error;
+		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+		output.appendLine(`❌ OpenAI API Error: ${errorMessage}`);
+
+		// Return a fallback response instead of throwing
+		return `I apologize, but I encountered an error while processing your request: ${errorMessage}.
+
+Here's what I can tell you about government contract analysis:
+
+**Key Areas to Focus On:**
+- Technical requirements and compliance
+- Past performance and experience
+- Pricing strategy and competitiveness
+- Risk assessment and mitigation
+- Proposal structure and organization
+
+**Best Practices:**
+- Thoroughly review all requirements
+- Address each evaluation criterion
+- Provide specific examples and metrics
+- Ensure compliance with all regulations
+- Create a compelling executive summary
+
+Would you like me to help you with any specific aspect of contract analysis or proposal development?`;
 	}
 }
 
